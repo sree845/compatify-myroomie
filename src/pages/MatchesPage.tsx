@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/appStore";
 import { sleepLabels, studyLabels } from "@/lib/matchingData";
-import { Trophy, LogOut, Sparkles } from "lucide-react";
+import { Trophy, LogOut, Sparkles, User } from "lucide-react";
 
 const MatchesPage = () => {
   const matches = useAppStore((s) => s.matches);
@@ -23,9 +23,14 @@ const MatchesPage = () => {
             <p className="text-xs text-muted-foreground">Welcome, {currentUser}</p>
             <h1 className="text-xl font-bold text-foreground">Your Matches</h1>
           </div>
-          <button onClick={() => { logout(); navigate("/"); }} className="p-2 rounded-xl bg-secondary text-secondary-foreground">
-            <LogOut className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/me")} className="p-2 rounded-xl gradient-primary text-primary-foreground shadow-card" aria-label="My profile">
+              <User className="w-4 h-4" />
+            </button>
+            <button onClick={() => { logout(); navigate("/"); }} className="p-2 rounded-xl bg-secondary text-secondary-foreground" aria-label="Log out">
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         <div className="space-y-4">

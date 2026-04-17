@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import OnboardingPage from "./pages/OnboardingPage";
 import MatchesPage from "./pages/MatchesPage";
 import ProfilePage from "./pages/ProfilePage";
+import MyProfilePage from "./pages/MyProfilePage";
 import ChatPage from "./pages/ChatPage";
 import NotFound from "./pages/NotFound";
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/matches" element={<MatchesPage />} />
+          <Route path="/me" element={<MyProfilePage />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/chat/:id" element={<ChatPage />} />
           <Route path="*" element={<NotFound />} />
