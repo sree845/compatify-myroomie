@@ -13,9 +13,3 @@ so it can be lifted into a real serverless function with minimal changes.
 - `matcher.ts` — Main `calculateMatches(profile)` entry point
 - `index.ts` — Public API — UI code imports from `@/algorithm`
 
-## Migrating to a real backend later
-
-1. Move `scoring.ts`, `matcher.ts`, `types.ts`, `labels.ts` into your server.
-2. Replace `sampleUsers.ts` with a database query inside `matcher.ts`.
-3. Expose `calculateMatches` behind an HTTP endpoint.
-4. In the client, replace the direct import with a `fetch()` call.
