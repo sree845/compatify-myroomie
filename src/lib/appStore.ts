@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { UserProfile, MatchResult } from "./matchingData";
-import { calculateMatches } from "./matchingData";
+import type { UserProfile, MatchResult } from "@/algorithm";
+import { calculateMatches } from "@/algorithm";
 
 interface AppState {
   isLoggedIn: boolean;
