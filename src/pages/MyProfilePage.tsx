@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/appStore";
-import { sleepLabels, noiseLabels, studyLabels } from "@/lib/matchingData";
-import { ChevronLeft, Moon, Volume2, BookOpen, Sparkles, Pencil, User } from "lucide-react";
+import { sleepLabels, noiseLabels, studyLabels, sampleUsers } from "@/lib/matchingData";
+import { ChevronLeft, Moon, Volume2, BookOpen, Sparkles, Pencil, User, Send, Check } from "lucide-react";
 
 const MyProfilePage = () => {
   const navigate = useNavigate();
   const currentUser = useAppStore((s) => s.currentUser);
   const userProfile = useAppStore((s) => s.userProfile);
   const isLoggedIn = useAppStore((s) => s.isLoggedIn);
+  const sentRequests = useAppStore((s) => s.sentRequests);
+  const sentUsers = sentRequests
+    .map((id) => sampleUsers.find((u) => u.id === id))
+    .filter((u): u is (typeof sampleUsers)[number] => Boolean(u));
 
   if (!isLoggedIn) {
     navigate("/");
@@ -139,6 +143,58 @@ const MyProfilePage = () => {
               </div>
             ))}
           </div>
+        </motion.div>
+
+        {/* Sent Requests */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-card rounded-2xl p-5 shadow-card mb-6"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Send className="w-4 h-4 text-primary" />
+              <h3 className="font-semibold text-foreground">Sent Requests</h3>
+            </div>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+              {sentUsers.length}
+            </span>
+          </div>
+
+          {sentUsers.length === 0 ? (
+            <div className="text-center py-6">
+              <div className="text-3xl mb-2">📭</div>
+              <p className="text-sm text-muted-foreground">
+                You haven't sent any roommate requests yet.
+              </p>
+              <button
+                onClick={() => navigate("/matches")}
+                className="mt-3 text-xs font-semibold text-primary hover:underline"
+              >
+                Browse matches →
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {sentUsers.map((u) => (
+                <button
+                  key={u.id}
+                  onClick={() => navigate(`/profile/${u.id}`)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/60 hover:bg-secondary transition-colors text-left"
+                >
+                  <div className="text-2xl">{u.avatar}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{u.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{u.major}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full bg-success text-success-foreground">
+                    <Check className="w-3 h-3" /> Sent
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         <button
