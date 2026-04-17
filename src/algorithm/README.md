@@ -2,8 +2,7 @@
 
 This folder is structured like a backend service, even though it currently runs
 in the browser. It contains **no UI code** and **no framework dependencies**,
-so it can be lifted into a real serverless function (e.g. Lovable Cloud,
-Supabase Edge Functions, Node API) with minimal changes.
+so it can be lifted into a real serverless function with minimal changes.
 
 ## Structure
 
