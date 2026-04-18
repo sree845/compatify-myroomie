@@ -17,9 +17,10 @@ const autoReplies = [
 const ChatPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const messages = useAppStore((s) => (id ? s.conversations[id] ?? [] : []));
+  const conversations = useAppStore((s) => s.conversations);
   const sendMessage = useAppStore((s) => s.sendMessage);
   const receiveMessage = useAppStore((s) => s.receiveMessage);
+  const messages = id ? conversations[id] ?? [] : [];
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
