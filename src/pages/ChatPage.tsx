@@ -1,31 +1,50 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/appStore";
 import { sampleUsers } from "@/lib/matchingData";
 import { ChevronLeft, Send } from "lucide-react";
 
-const sampleMessages = [
-  { from: "them", text: "Hey! I saw we got matched 😊", time: "2:30 PM" },
-  { from: "them", text: "What dorm are you looking at?", time: "2:31 PM" },
-  { from: "me", text: "Hi! Yeah pretty cool right? I'm looking at West Hall", time: "2:33 PM" },
-  { from: "them", text: "Nice! I was thinking the same. Want to coordinate?", time: "2:34 PM" },
+const autoReplies = [
+  "Hey! Nice to hear from you 😊",
+  "That sounds great!",
+  "Haha, totally agree.",
+  "What dorm are you thinking about?",
+  "Let me know when you're free to chat more!",
+  "Cool, I'll think about it.",
 ];
 
 const ChatPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const currentUser = useAppStore((s) => s.currentUser);
-  const [messages, setMessages] = useState(sampleMessages);
+  const messages = useAppStore((s) => (id ? s.conversations[id] ?? [] : []));
+  const sendMessage = useAppStore((s) => s.sendMessage);
+  const receiveMessage = useAppStore((s) => s.receiveMessage);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const user = sampleUsers.find((u) => u.id === id);
-  if (!user) return null;
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  if (!user || !id) return null;
 
   const send = () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { from: "me", text: input.trim(), time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]);
+    const text = input.trim();
+    if (!text) return;
+    sendMessage(id, text);
     setInput("");
+
+    // Simulated reply
+    setIsTyping(true);
+    const reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+    setTimeout(() => {
+      receiveMessage(id, reply);
+      setIsTyping(false);
+    }, 1200 + Math.random() * 1200);
   };
 
   return (
@@ -38,18 +57,22 @@ const ChatPage = () => {
         <span className="text-2xl">{user.avatar}</span>
         <div>
           <h2 className="font-bold text-foreground text-sm">{user.name}</h2>
-          <p className="text-xs text-muted-foreground">Online</p>
+          <p className="text-xs text-muted-foreground">{isTyping ? "Typing…" : "Online"}</p>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto space-y-3 max-w-sm mx-auto w-full">
+      <div ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto space-y-3 max-w-sm mx-auto w-full">
+        {messages.length === 0 && !isTyping && (
+          <div className="text-center text-xs text-muted-foreground py-10">
+            No messages yet. Say hi to {user.name}! 👋
+          </div>
+        )}
         {messages.map((msg, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
             className={`flex ${msg.from === "me" ? "justify-end" : "justify-start"}`}
           >
             <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
@@ -62,6 +85,15 @@ const ChatPage = () => {
             </div>
           </motion.div>
         ))}
+        {isTyping && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+            <div className="bg-card text-foreground shadow-card rounded-2xl rounded-bl-md px-4 py-3 flex gap-1">
+              <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" />
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Input */}
